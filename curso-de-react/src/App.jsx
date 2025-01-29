@@ -1,55 +1,56 @@
-
+import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTasks";
-import { useState } from "react";
 
 function App() {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Primeira Tarefa",
-      description: "Esta é a descrição da primeira tarefa",
-      isCompleted: false,
-    },
+  // Carregar as tarefas do localStorage ao iniciar
+  const loadTasks = () => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  };
 
-    {
-      id: 2,
-      title: "Segunda Tarefa",
-      description: "Esta é a descrição da segunda tarefa",
-      isCompleted: true,
-    },
+  const [tasks, setTasks] = useState(loadTasks);
 
-    {
-      id: 3,
-      title: "Terceira Tarefa",
-      description: "Esta é a descrição da terceira tarefa",
-      isCompleted: false,
-    },
-  ]);
+  // Atualizar o localStorage sempre que tasks for alterado
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   function onTaskClick(taskId) {
-    // Implementar a função para marcar uma tarefa como concluída
-    // Atualizar o estado da tarefa concluída na lista de tarefas
-    // Utilizar o setTasks para fazer a alteração
-    // Exemplo: setTasks(tasks.map(task => task.id === id? {...task, isCompleted:!task.isCompleted } : task))
-    const newTasks = tasks.map((task) => {
-      if (task.id == taskId) {
-        return { ...task, isCompleted: !task.isCompleted };
-      }
-      return task;
-    });
-
+    const newTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
+    );
     setTasks(newTasks);
+  }
+
+  function onDeleteTaskClick(taskId) {
+    const newTasks = tasks.filter((task) => task.id !== taskId);
+    setTasks(newTasks);
+  }
+
+  function onAddTaskSubmit(title, description) {
+    const newTask = {
+      id: uuidv4(),
+      title,
+      description,
+      isCompleted: false,
+    };
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   }
 
   return (
     <div className="w-screen h-screen bg-slate-900 flex justify-center p-6">
-      <div className="w-[500px]">
+      <div className="w-[500px] space-y-4">
         <h1 className="text-4xl text-slate-100 font-bold text-center mb-5">
           Gerenciador de Tarefas
         </h1>
-        <Tasks tasks={tasks} onTaskClick={onTaskClick}/>
-        <AddTask />
+        <AddTask onAddTaskSubmit={onAddTaskSubmit} />
+        <Tasks
+          tasks={tasks}
+          onTaskClick={onTaskClick}
+          onDeleteTaskClick={onDeleteTaskClick}
+        />
       </div>
     </div>
   );
