@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTasks";
+import { use } from "react";
 
 function App() {
   // Carregar as tarefas do localStorage ao iniciar
@@ -16,6 +17,25 @@ function App() {
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
+
+  useEffect(() => {
+    // CHAMAR A API
+    const fetchTasks = async () => {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/todos?_limit=10",
+        {
+          method: "GET",
+        }
+      );
+    //PEGAR OS DADOS QUE ELA RETORNA
+      const data = await response.json();
+
+    // ARMAZENAR/PERSISTIR ESSES DADOS NO STATE
+    //setTasks(data);
+
+    };
+    fetchTasks();
+  }, []);
 
   function onTaskClick(taskId) {
     const newTasks = tasks.map((task) =>
