@@ -31,6 +31,7 @@ function App() {
       const data = await response.json();
 
     // ARMAZENAR/PERSISTIR ESSES DADOS NO STATE
+    // SE QUISER PODE-SE CHAMAR A API PARA PEGAR AS TAREFAS
     //setTasks(data);
 
     };
